@@ -18,6 +18,6 @@ const taskSchema = new mongoose.Schema({
     description: {
         type: String
     }
-});
+}, {timestamps: true});
 
 export const Task = mongoose.model("Task", taskSchema)
