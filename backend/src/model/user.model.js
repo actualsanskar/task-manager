@@ -35,11 +35,11 @@ userSchema.methods.checkPassword = async function (pass) {
 }
 
 userSchema.methods.generateAccessToken = function() {
-    return jwt.sign({username: this.username, email: this.email}, process.env.JWT_SECRET_KEY);
+    return jwt.sign({username: this.username, email: this.email}, process.env.JWT_ACCESS_TOKEN_KEY, {expiresIn: process.env.JWT_ACCESS_EXPIRY_KEY});
 }
 
 userSchema.methods.generateRefreshToken = function() {
-    return jwt.sign({username: this.username}, process.env.JWT_SECRET_KEY);
+    return jwt.sign({username: this.username}, process.env.JWT_SECRET_KEY, {expiresIn: process.env.JWT_REFRESH_EXPIRY_KEY});
 }
 
 export const User = mongoose.model("User", userSchema);
