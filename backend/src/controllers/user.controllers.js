@@ -77,10 +77,35 @@ const login = asyncHandler(async(req, res, next) => {
     )
 })
 
+const resetPass = asyncHandler(async (req, res, next) => {
+    const {currentPass, newPass} = req.body;
+
+    const user = await User.findOne({email: req.user.email});
+    
+    const result = await user.checkPassword(currentPass);
+
+    if(!result) throw new ApiError(401, "current password is incorrect!");
+
+    user.password = newPass;
+    const updatedUser = await user.save({validateBeforeSave: false});
+    // console.log(updatedUser);
+    
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, updatedUser, "password changed successfully!")
+    )
+
+})
+
+
+
 
 
 
 export {
     signup,
-    login
+    login,
+    resetPass
 }
