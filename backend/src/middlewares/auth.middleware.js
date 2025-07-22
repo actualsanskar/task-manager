@@ -11,7 +11,7 @@ const authUser = async (req, res, next) => {
         
         if(!accessToken) throw new ApiError(401, "token not found, unauthorized access")
     
-        const decodedToken = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+        const decodedToken = jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN_KEY);
 
         const user = await User.findOne({email: decodedToken.email});
 
@@ -19,7 +19,7 @@ const authUser = async (req, res, next) => {
             throw new ApiError(400, "access unauthorized!")
         }
 
-        req.user = user
+        req.user = user;
         next();
 
     } catch (error) {

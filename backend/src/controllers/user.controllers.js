@@ -68,10 +68,15 @@ const login = asyncHandler(async(req, res, next) => {
     
     const updatedUser = await User.findOne({email});
 
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
     return res
     .status(200)
-    .cookie("accessToken", accessToken)
-    .cookie("refreshToken", refreshToken)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
     .json(
         new ApiResponse(200, updatedUser, "user successfully logged in")
     )
