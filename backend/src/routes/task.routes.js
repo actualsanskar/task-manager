@@ -4,9 +4,9 @@ import { addTask, allTasks, deleteTask, specificTask, updateTask } from '../cont
 const route = express.Router();
 
 route.post('/add-task', authUser, addTask);
-// route.get('/tasks', authUser, allTasks);
-// route.get('/tasks/:id', authUser, specificTask);
-// route.put('/tasks/:id', authUser, updateTask);
-// route.delete('/tasks/:id', authUser, deleteTask);
+route.get('/tasks', authUser, allTasks);
+route.get('/tasks/:id', authUser, specificTask);
+route.put('/tasks/:id', authUser, updateTask);
+route.delete('/tasks/:id', authUser, deleteTask);
 
 export default route

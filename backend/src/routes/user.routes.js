@@ -9,10 +9,7 @@ route.post('/auth/login', login);
 
 // authorized routes
 route.post('/auth/reset-password',authUser, resetPass);
-// route.get('/all-tasks', )
-// route.get('/add-task', )
-// route.get('/delete-task', )
-// route.get('/edit-task', )
+// route.post('/logout', authUser, )
 
 
 export default route;
