@@ -1,3 +1,4 @@
+import { verifyRefreshToken } from "../middlewares/auth.middleware.js";
 import { User } from "../model/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -104,13 +105,56 @@ const resetPass = asyncHandler(async (req, res, next) => {
 
 })
 
+const userDetails = asyncHandler(async (req, res, next) => {
+    return req.user;
+})
 
+const logout = asyncHandler(async (req, res, next) => {
 
+    const user = req.user;
+    user.refreshToken = null;
+    await user.save({validateBeforeSave: false});
 
+    return res
+    .clearCookie("accessToken")
+    .status(200)
+    .json(
+        new ApiResponse(200, {}, "user logged out succesfully")
+    )
+})
 
+const generateNewAccessToken = asyncHandler(async (req, res, next) => {
+    const refreshToken = req.cookies.refreshToken || req.header.refreshToken;
+
+    if(!refreshToken) throw new ApiError(500, "error while receiving refresh token");
+    
+    const decodedToken = verifyRefreshToken(refreshToken);
+    
+    const user = await User.findById({_id: decodedToken._id})
+    
+    if(!user) throw new ApiError(501, "unable to find user for verified refresh token!");
+
+    const newAccessToken = await user.generateAccessToken();
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .cookie("accessToken", newAccessToken, options)
+    .json(
+        new ApiResponse(200, newAccessToken, "new token generated successfully!")
+    );
+
+})
 
 export {
     signup,
     login,
-    resetPass
+    resetPass,
+    userDetails,
+    logout,
+    generateNewAccessToken
 }

@@ -3,7 +3,7 @@ import { User } from "../model/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 
 
-const authUser = async (req, res, next) => {
+const verifyUser = async (req, res, next) => {
     try {
         const accessToken =  req.cookies.accessToken || req.headers.accessToken;
 
@@ -28,4 +28,15 @@ const authUser = async (req, res, next) => {
     }
 }
 
-export default authUser;
+const verifyRefreshToken = (token) => {
+    try {
+        const decodedToken = jwt.verify(token, process.env.JWT_REFRESH_TOKEN_KEY);
+        return decodedToken;
+    } catch (error) {
+        console.log("Error while verifying refresh token: " + error);
+    }
+}
+
+export {verifyRefreshToken}
+
+export default verifyUser;
