@@ -5,156 +5,150 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 const generateAccessAndRefreshToken = async (user) => {
-    const accessToken = await user.generateAccessToken();
-    const refreshToken = await user.generateRefreshToken();
+  const accessToken = await user.generateAccessToken();
+  const refreshToken = await user.generateRefreshToken();
 
-    user.refreshToken = refreshToken;
-    await user.save({validateBeforeSave: false});
-    return {accessToken, refreshToken};
-
-}
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+  return { accessToken, refreshToken };
+};
 
 const signup = asyncHandler(async (req, res, next) => {
-    const {username, email, password} = req.body;
+  const { username, email, password } = req.body;
 
-    if(!username || !email || !password){
-        throw new ApiError(400, "enter all the necessary details!");
-    }
+  if (!username || !email || !password) {
+    throw new ApiError(400, "enter all the necessary details!");
+  }
 
-    const existingUser = await User.findOne({
-        username
-    });
+  const existingUser = await User.findOne({
+    username,
+  });
 
-    if(existingUser){
-        throw new ApiError(401, "User already exists!");
-    }
+  if (existingUser) {
+    throw new ApiError(401, "User already exists!");
+  }
 
-    const user = await User.insertOne({
-        username,
-        email,
-        password
-    })
+  const user = await User.insertOne({
+    username,
+    email,
+    password,
+  });
 
-    if(!user){
-        throw new ApiError(500, "error while creating registration!")
-    }
+  if (!user) {
+    throw new ApiError(500, "error while creating registration!");
+  }
 
-    return res
+  return res
     .status(200)
-    .json(
-        new ApiResponse(200, user, "Registered user successfully!")
-    )
-})
+    .json(new ApiResponse(200, user, "Registered user successfully!"));
+});
 
-const login = asyncHandler(async(req, res, next) => {
-    const {email, password} = req.body;
-    
-    if(!email || !password){
-        throw new ApiError(400, "enter all the necessary details!");
-    }
-    
-    const user = await User.findOne({email});
+const login = asyncHandler(async (req, res, next) => {
+  // console.log(req.body);
 
-    if(!user) throw new ApiError(400, "no such user exist");
+  const { email, password } = req.body;
 
-    const checkPass = await user.checkPassword(password);
+  if (!email || !password) {
+    throw new ApiError(400, "enter all the necessary details!");
+  }
 
-    if(!checkPass){
-        throw new ApiError(401, "password is incorrect!");
-    }
-    
-    const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user);
+  const user = await User.findOne({ email });
 
-    if(!accessToken || !refreshToken ) throw new ApiError(500, "error in access or refresh token");
-    
-    const updatedUser = await User.findOne({email});
+  if (!user) throw new ApiError(400, "no such user exist");
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
+  const checkPass = await user.checkPassword(password);
 
-    return res
+  if (!checkPass) {
+    throw new ApiError(401, "password is incorrect!");
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user
+  );
+
+  if (!accessToken || !refreshToken)
+    throw new ApiError(500, "error in access or refresh token");
+
+  const updatedUser = await User.findOne({ email });
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(
-        new ApiResponse(200, updatedUser, "user successfully logged in")
-    )
-})
+    .json(new ApiResponse(200, updatedUser, "user successfully logged in"));
+});
 
 const resetPass = asyncHandler(async (req, res, next) => {
-    const {currentPass, newPass} = req.body;
+  const { currentPass, newPass } = req.body;
 
-    const user = await User.findOne({email: req.user.email});
-    
-    const result = await user.checkPassword(currentPass);
+  const user = await User.findOne({ email: req.user.email });
 
-    if(!result) throw new ApiError(401, "current password is incorrect!");
+  const result = await user.checkPassword(currentPass);
 
-    user.password = newPass;
-    const updatedUser = await user.save({validateBeforeSave: false});
-    // console.log(updatedUser);
-    
+  if (!result) throw new ApiError(401, "current password is incorrect!");
 
-    return res
+  user.password = newPass;
+  const updatedUser = await user.save({ validateBeforeSave: false });
+  // console.log(updatedUser);
+
+  return res
     .status(200)
-    .json(
-        new ApiResponse(200, updatedUser, "password changed successfully!")
-    )
-
-})
+    .json(new ApiResponse(200, updatedUser, "password changed successfully!"));
+});
 
 const userDetails = asyncHandler(async (req, res, next) => {
-    return req.user;
-})
+  const user = req.user.toObject();
+  return res.status(200).json(new ApiResponse(200, user, "user details sent"));
+});
 
 const logout = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+  user.refreshToken = null;
+  await user.save({ validateBeforeSave: false });
 
-    const user = req.user;
-    user.refreshToken = null;
-    await user.save({validateBeforeSave: false});
-
-    return res
+  return res
     .clearCookie("accessToken")
+    .clearCookie("refreshToken")
     .status(200)
-    .json(
-        new ApiResponse(200, {}, "user logged out succesfully")
-    )
-})
+    .json(new ApiResponse(200, {}, "user logged out succesfully"));
+});
 
 const generateNewAccessToken = asyncHandler(async (req, res, next) => {
-    const refreshToken = req.cookies.refreshToken || req.header.refreshToken;
+  const refreshToken = req.cookies.refreshToken || req.header.refreshToken;
+  if (!refreshToken)
+    throw new ApiError(500, "error while receiving refresh token");
 
-    if(!refreshToken) throw new ApiError(500, "error while receiving refresh token");
-    
-    const decodedToken = verifyRefreshToken(refreshToken);
-    
-    const user = await User.findById({_id: decodedToken._id})
-    
-    if(!user) throw new ApiError(501, "unable to find user for verified refresh token!");
+  const decodedToken = verifyRefreshToken(refreshToken);
+  const user = await User.findOne({ username: decodedToken?.username });
 
-    const newAccessToken = await user.generateAccessToken();
+  if (!user)
+    throw new ApiError(500, "unable to find user for verified refresh token!");
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
+  const newAccessToken = await user.generateAccessToken();
 
-    return res
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
     .status(200)
     .cookie("accessToken", newAccessToken, options)
     .json(
-        new ApiResponse(200, newAccessToken, "new token generated successfully!")
+      new ApiResponse(200, newAccessToken, "new token generated successfully!")
     );
-
-})
+});
 
 export {
-    signup,
-    login,
-    resetPass,
-    userDetails,
-    logout,
-    generateNewAccessToken
-}
+  signup,
+  login,
+  resetPass,
+  userDetails,
+  logout,
+  generateNewAccessToken,
+};

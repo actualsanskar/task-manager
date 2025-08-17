@@ -1,24 +1,28 @@
-import express, { urlencoded } from 'express';
-import cookieParser from 'cookie-parser';
+import express from "express";
+import cookieParser from "cookie-parser";
 const app = express();
 import userRoute from "./routes/user.routes.js";
 import taskRoute from "./routes/task.routes.js";
+import cors from "cors";
 
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// test route
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // user routes
-app.use('/api/v1', userRoute);
+app.use("/api/v1", userRoute);
 
 // task routes
-app.use('/api/v1', taskRoute);
+app.use("/api/v1", taskRoute);
 
-app.get('/' , (req, res, next)=> {
-    res.send("HELLO SERVER")
-})
+app.get("/", (req, res, next) => {
+  res.send("HELLO SERVER");
+});
 
-
-export {app};
+export { app };
