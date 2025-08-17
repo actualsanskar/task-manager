@@ -22,30 +22,32 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="columns-3 gap-2 mt-2.5 h-[70vh] overflow-y-auto rounded-xl">
-      {allTasks.map((item) => {
-        return (
-          <div key={item._id} className="break-inside-avoid mb-2">
-            <BorderBox
-              className={`bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-900 transition`}
-            >
-              <TaskBox
-                _id={item._id}
-                taskStatus={item.taskStatus}
-                title={item.title}
-                description={item.description}
-              />
-            </BorderBox>
-          </div>
-        );
-      })}
+    <div className="h-[68vh] overflow-y-auto rounded-xl my-2">
+      <div className="columns-3 gap-2">
+        {allTasks.map((item) => {
+          return (
+            <div key={item._id} className="break-inside-avoid mb-2">
+              <BorderBox
+                className={`bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md transition`}
+              >
+                <TaskBox
+                  _id={item._id}
+                  taskStatus={item.taskStatus}
+                  title={item.title}
+                  description={item.description}
+                />
+              </BorderBox>
+            </div>
+          );
+        })}
 
-      <div onClick={addTaskHandler} className="break-inside-avoid mb-2">
-        <BorderBox
-          className={`max-h-64 flex justify-center items-center min-h-[140px] bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-150 transition`}
-        >
-          <IoMdAddCircleOutline size={40} className="text-white" />
-        </BorderBox>
+        <div onClick={addTaskHandler} className="break-inside-avoid mb-2">
+          <BorderBox
+            className={`max-h-64 flex justify-center items-center min-h-[140px] bg-gray-800 p-4 rounded-xl shadow-sm hover:shadow-md hover:bg-gray-150 cursor-pointer transition`}
+          >
+            <IoMdAddCircleOutline size={40} className="text-white" />
+          </BorderBox>
+        </div>
       </div>
 
       {addTaskShow && <AddTask toClose={() => setAddTaskShow(false)} />}

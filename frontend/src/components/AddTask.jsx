@@ -43,32 +43,43 @@ function AddTask({ toClose }) {
     <div
       ref={closeDivRef}
       onClick={closeAddTask}
-      className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex justify-center items-center"
     >
-      <div className="text-black flex flex-col gap-1">
-        <button className="place-self-end" onClick={toClose}>
+      <div className="text-white flex flex-col gap-1">
+        <button className="place-self-end text-white" onClick={toClose}>
           <IoMdClose size={30} />
         </button>
-        <div className="flex flex-col items-center bg-white rounded-3xl p-4 shadow">
-          <form action={handleSubmit(addTaskHandler)}>
+        <div className="flex flex-col bg-gray-800 rounded-2xl p-6 shadow-2xl w-96">
+          <h3 className="text-2xl font-bold text-white tracking-wide mb-4">
+            Add New Task
+          </h3>
+          <form onSubmit={handleSubmit(addTaskHandler)} className="space-y-4">
             <InputBox
-              label="Task: "
-              placeholder="add task"
-              props={{ ...register("task.title") }}
+              label="Task Title"
+              placeholder="Enter task title"
+              props={{
+                ...register("task.title"),
+                className:
+                  "p-3 w-full bg-gray-700 border-2 border-transparent text-white rounded-xl focus:outline-none focus:border-blue-500 transition-colors duration-300 placeholder-gray-500",
+              }}
             />
-
-            <label htmlFor="descpt">Description: </label>
-            <textarea
-              name="description"
-              id="descpt"
-              {...register("task.description")}
-              placeholder="add description"
-            ></textarea>
-            <div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">
+                Description
+              </label>
+              <textarea
+                {...register("task.description")}
+                placeholder="Add description"
+                className="p-3 w-full bg-gray-700 border-2 border-transparent text-white rounded-xl focus:outline-none focus:border-blue-500 transition-colors duration-300 placeholder-gray-500 min-h-[100px] resize-none"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-400">
+                Status
+              </label>
               <select
-                name="taskStatus"
-                id="taskStatus"
                 {...register("task.taskstatus")}
+                className="p-3 w-full bg-gray-700 border-2 border-transparent text-white rounded-xl focus:outline-none focus:border-blue-500 transition-colors duration-300"
               >
                 <option value="not-started">Not Started</option>
                 <option value="planning">Planning</option>
@@ -76,7 +87,10 @@ function AddTask({ toClose }) {
                 <option value="done">Done</option>
               </select>
             </div>
-            <ButtonBox className="w-full" text="Add Task" />
+            <ButtonBox
+              text="Add Task"
+              className="w-full bg-blue-700 hover:to-blue-800 text-white font-bold py-3 rounded-xl shadow-lg transform transition-transform duration-200 hover:scale-[1.02] active:scale-95"
+            />
           </form>
         </div>
       </div>

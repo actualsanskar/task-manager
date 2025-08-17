@@ -1,5 +1,5 @@
 import { Header, BorderBox } from "./components/componentIndex.js";
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { api } from "./utils/axiosApi.js";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -26,7 +26,9 @@ function App() {
   return (
     <>
       <div className="flex items-center justify-center h-screen bg-gray-800">
-        <BorderBox className={`bg-gray-100 h-[85vh] w-10/12 flex flex-col`}>
+        <BorderBox
+          className={`bg-gray-100 h-[85vh] w-10/12 flex flex-col pb-1.5`}
+        >
           <BorderBox className="bg-blue-900 text-white">
             <Header />
           </BorderBox>
@@ -38,6 +40,18 @@ function App() {
             }
           >
             <Outlet />
+          </div>
+          <div className="text-center text-xs text-gray-400 bg-gray-700 rounded-2xl">
+            <hr />
+            <span>Created by: </span>
+            <a
+              href="https://www.linkedin.com/in/actualsanskar/"
+              className="text-gray-300 hover:text-white transition-colors duration-200"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Sanskar Agarwal
+            </a>
           </div>
         </BorderBox>
       </div>

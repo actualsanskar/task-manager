@@ -17,13 +17,23 @@ function Header() {
       <div className="mt-2 mr-2">
         {!isAuth && (
           <div>
-            <Link to="/signup">Sign Up</Link>
-            <Link to="/login">Login</Link>
+            <Link
+              to="/signup"
+              className="w-full bg-blue-700 text-white font-bold py-2 rounded-xl shadow-lg transform transition-transform duration-200 hover:scale-[1.02] active:scale-95 text-sm border border-gray-400 p-2 cursor-pointer mx-2"
+            >
+              Sign Up
+            </Link>
+            <Link
+              to="/login"
+              className="w-full bg-blue-700 text-white font-bold py-2 rounded-xl shadow-lg transform transition-transform duration-200 hover:scale-[1.02] active:scale-95 text-sm border border-gray-400 p-2 cursor-pointer mx-2"
+            >
+              Login
+            </Link>
           </div>
         )}
 
         {isAuth && (
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             <div onClick={() => setAddTaskShow(true)}>
               <IoMdAddCircleOutline size={30} />
             </div>

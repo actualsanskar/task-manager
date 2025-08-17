@@ -5,10 +5,10 @@ function ButtonBox({ text = "Button", type = "submit", className = "", prop }) {
     <div>
       <button
         type={type}
-        className={`rounded-2xl text-sm border border-gray-400 p-2 ${className}`}
+        className={`rounded-2xl text-sm border border-gray-400 p-2 cursor-pointer ${className}`}
         {...prop}
       >
-        {text}	
+        {text}
       </button>
     </div>
   );
