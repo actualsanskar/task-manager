@@ -42,7 +42,6 @@ function App() {
             <Outlet />
           </div>
           <div className="text-center text-xs text-gray-400 bg-gray-700 rounded-2xl">
-            <hr />
             <span>Created by: </span>
             <a
               href="https://www.linkedin.com/in/actualsanskar/"
